@@ -33,19 +33,27 @@ export const useDataApi = (initialUrl, initialData) => {
         isLoading: false,
         isError: false,
         data: initialData,
-    });
-
+    });git 
     useEffect(() => {
+        let didCancel = false;
         const fetchData = async () => {
             dispatch({type: 'FETCH_INIT'});
             try {
                 const result = await axios(url);
-                dispatch({type: 'FETCH_SUCCESS', payload: result.data})
+                if (!didCancel) {
+                    dispatch({type: 'FETCH_SUCCESS', payload: result.data})
+                }
             } catch (error) {
-                dispatch({type: 'FETCH_FAILURE'});
+                if (!didCancel) {
+                    dispatch({type: 'FETCH_FAILURE'});
+                }
             }
         };
         fetchData();
+
+        return () => {
+            didCancel = true;
+        };
     }, [url]);
 
     const doFetch = url => {
